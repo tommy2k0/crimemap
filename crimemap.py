@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask import request
 import dbconfig
+import json
 
 if dbconfig.test:
     from mockdbhelper import MockDBHelper as DBHelper
@@ -13,12 +14,9 @@ DB = DBHelper()
 
 @app.route("/")
 def home():
-    try:
-        data = DB.get_all_inputs()
-    except Exception as e:
-        print(e)
-        data = None
-    return render_template("home.html", data=data)
+    crimes = DB.get_all_crimes()   #dump-s -> dump string 
+    crimes = json.dumps(crimes)   #used to convert python dictionary into JSON string for displaying with JS
+    return render_template("home.html", crimes=crimes)
 
 @app.route("/submitcrime", methods=["POST"])
 def submitcrime():
